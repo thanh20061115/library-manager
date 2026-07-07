@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { BooksModule } from './books/books.module';
 import { ReadersModule } from './readers/readers.module';
 import { BorrowRecordsModule } from './borrow-records/borrow-records.module';
@@ -8,8 +8,23 @@ import { AuthModule } from './auth/auth.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
-  imports: [BooksModule, ReadersModule, BorrowRecordsModule, AuthModule, DashboardModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: 'root',
+      password: '123456',
+      database: 'library_management',
+      autoLoadEntities: true,
+      synchronize: true,
+    }),
+
+    BooksModule,
+    ReadersModule,
+    BorrowRecordsModule,
+    AuthModule,
+    DashboardModule,
+  ],
 })
 export class AppModule {}
