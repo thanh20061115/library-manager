@@ -4,7 +4,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { BorrowRecord } from '../../borrow-records/entities/borrow-record.entity';
 
 @Entity('readers')
 export class Reader {
@@ -22,6 +24,9 @@ export class Reader {
 
   @Column({ nullable: true })
   address: string;
+
+  @OneToMany(() => BorrowRecord, (borrowRecord) => borrowRecord.reader)
+  borrowRecords: BorrowRecord[];
 
   @CreateDateColumn()
   createdAt: Date;

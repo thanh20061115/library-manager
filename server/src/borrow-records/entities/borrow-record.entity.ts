@@ -4,18 +4,31 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+
+import { Book } from '../../books/entities/book.entity';
+import { Reader } from '../../readers/entities/reader.entity';
 
 @Entity('borrow_records')
 export class BorrowRecord {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  bookId: number;
+  @ManyToOne(() => Book, (book) => book.borrowRecords, {
+    eager: true,
+    nullable: false,
+  })
+  @JoinColumn({ name: 'bookId' })
+  book: Book;
 
-  @Column()
-  readerId: number;
+  @ManyToOne(() => Reader, (reader) => reader.borrowRecords, {
+    eager: true,
+    nullable: false,
+  })
+  @JoinColumn({ name: 'readerId' })
+  reader: Reader;
 
   @Column({ type: 'date' })
   borrowDate: Date;
@@ -24,9 +37,11 @@ export class BorrowRecord {
   dueDate: Date;
 
   @Column({ type: 'date', nullable: true })
-  returnDate?: Date;
+  returnDate: Date;
 
-  @Column({ default: 'BORROWED' })
+  @Column({
+    default: 'BORROWED',
+  })
   status: string;
 
   @CreateDateColumn()

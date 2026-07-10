@@ -5,12 +5,18 @@ import {
   Body,
   Param,
   Put,
+  Patch,
   Delete,
 } from '@nestjs/common';
 import { BorrowRecordsService } from './borrow-records.service';
 import { CreateBorrowRecordDto } from './dto/create-borrow-record.dto';
 import { UpdateBorrowRecordDto } from './dto/update-borrow-record.dto';
+import { UseGuards } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
+@ApiBearerAuth('JWT')
+@UseGuards(JwtAuthGuard)
 @Controller('borrow-records')
 export class BorrowRecordsController {
   constructor(
@@ -41,6 +47,11 @@ export class BorrowRecordsController {
       Number(id),
       updateBorrowRecordDto,
     );
+  }
+
+  @Patch(':id/return')
+  returnBook(@Param('id') id: string) {
+    return this.borrowRecordsService.returnBook(+id);
   }
 
   @Delete(':id')

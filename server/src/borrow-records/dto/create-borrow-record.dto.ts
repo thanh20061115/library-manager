@@ -8,20 +8,22 @@ import {
 
 export class CreateBorrowRecordDto {
   @IsInt()
+  @IsNotEmpty()
   bookId: number;
 
   @IsInt()
+  @IsNotEmpty()
   readerId: number;
 
   @IsDateString()
-  borrowDate: string;
+  borrowDate: Date;
 
   @IsDateString()
-  dueDate: string;
+  dueDate: Date;
 
   @IsOptional()
   @IsDateString()
-  returnDate?: string;
+  returnDate?: Date;
 
   @IsOptional()
   @IsString()

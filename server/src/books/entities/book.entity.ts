@@ -4,7 +4,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { BorrowRecord } from '../../borrow-records/entities/borrow-record.entity';
 
 @Entity('books')
 export class Book {
@@ -28,6 +30,9 @@ export class Book {
 
   @Column({ type: 'int', default: 1 })
   available: number;
+
+  @OneToMany(() => BorrowRecord, (borrowRecord) => borrowRecord.book)
+  borrowRecords: BorrowRecord[];
 
   @CreateDateColumn()
   createdAt: Date;

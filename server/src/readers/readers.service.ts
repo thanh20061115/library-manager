@@ -1,8 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 
 import { Reader } from './entities/reader.entity';
+import { BorrowRecord } from '../borrow-records/entities/borrow-record.entity';
+
 import { CreateReaderDto } from './dto/create-reader.dto';
 import { UpdateReaderDto } from './dto/update-reader.dto';
 
@@ -11,6 +17,9 @@ export class ReadersService {
   constructor(
     @InjectRepository(Reader)
     private readonly readerRepo: Repository<Reader>,
+
+    @InjectRepository(BorrowRecord)
+    private readonly borrowRepo: Repository<BorrowRecord>,
   ) {}
 
   // Thêm độc giả
@@ -19,19 +28,54 @@ export class ReadersService {
     return await this.readerRepo.save(reader);
   }
 
-  // Lấy danh sách độc giả
-  async findAll(): Promise<Reader[]> {
-    return await this.readerRepo.find();
+  // Danh sách độc giả + Search + Pagination
+  async findAll(
+    page = 1,
+    limit = 10,
+    keyword = '',
+  ): Promise<{
+    data: Reader[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    const [data, total] = await this.readerRepo.findAndCount({
+      where: [
+        {
+          fullName: Like(`%${keyword}%`),
+        },
+        {
+          email: Like(`%${keyword}%`),
+        },
+        {
+          phone: Like(`%${keyword}%`),
+        },
+      ],
+      skip: (page - 1) * limit,
+      take: limit,
+      order: {
+        id: 'DESC',
+      },
+    });
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
   }
 
-  // Lấy độc giả theo ID
+  // Chi tiết độc giả
   async findOne(id: number): Promise<Reader> {
     const reader = await this.readerRepo.findOne({
       where: { id },
     });
 
     if (!reader) {
-      throw new NotFoundException(`Reader with ID ${id} not found`);
+      throw new NotFoundException(
+        `Reader with ID ${id} not found`,
+      );
     }
 
     return reader;
@@ -50,8 +94,44 @@ export class ReadersService {
   }
 
   // Xóa độc giả
-  async remove(id: number): Promise<void> {
+  async remove(id: number) {
     const reader = await this.findOne(id);
+
+    const borrowing = await this.borrowRepo.count({
+      where: {
+        reader: {
+          id,
+        },
+        status: 'BORROWED',
+      },
+    });
+
+    if (borrowing > 0) {
+      throw new BadRequestException(
+        'Cannot delete this reader because they are currently borrowing books.',
+      );
+    }
+
     await this.readerRepo.remove(reader);
+
+    return {
+      message: 'Reader deleted successfully',
+    };
   }
+
+  async getBorrowHistory(id: number) {
+  await this.findOne(id);
+
+  return await this.borrowRepo.find({
+    where: {
+      reader: {
+        id,
+      },
+    },
+    relations: ['book'],
+    order: {
+      borrowDate: 'DESC',
+    },
+  });
+ }
 }

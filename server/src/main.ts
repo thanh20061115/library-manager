@@ -23,11 +23,19 @@ async function bootstrap() {
 
   // Swagger
   const config = new DocumentBuilder()
-    .setTitle('Library Management System API')
-    .setDescription('API quản lý thư viện')
-    .setVersion('1.0')
-    .build();
-
+  .setTitle('Library Management System API')
+  .setDescription('API quản lý thư viện')
+  .setVersion('1.0')
+  .addBearerAuth(
+    {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      description: 'Nhập JWT Token',
+    },
+    'JWT',
+  )
+  .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
