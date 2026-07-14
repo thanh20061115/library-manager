@@ -134,4 +134,12 @@ export class ReadersService {
     },
   });
  }
+
+ async findAllReaders(): Promise<Reader[]> {
+  return this.readerRepo.find({
+    order: {
+      fullName: 'ASC',
+    },
+  });
+}
 }

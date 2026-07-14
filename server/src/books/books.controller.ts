@@ -45,6 +45,11 @@ findAll(
   );
 }
 
+@Get('all')
+findAllBooks() {
+  return this.booksService.findAllBooks();
+}
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.booksService.findOne(Number(id));

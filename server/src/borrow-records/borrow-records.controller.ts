@@ -7,12 +7,15 @@ import {
   Put,
   Patch,
   Delete,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
+
+import { ApiBearerAuth } from '@nestjs/swagger';
+
 import { BorrowRecordsService } from './borrow-records.service';
 import { CreateBorrowRecordDto } from './dto/create-borrow-record.dto';
 import { UpdateBorrowRecordDto } from './dto/update-borrow-record.dto';
-import { UseGuards } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiBearerAuth('JWT')
@@ -29,8 +32,16 @@ export class BorrowRecordsController {
   }
 
   @Get()
-  findAll() {
-    return this.borrowRecordsService.findAll();
+  findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('status') status = '',
+  ) {
+    return this.borrowRecordsService.findAll(
+      Number(page),
+      Number(limit),
+      status,
+    );
   }
 
   @Get(':id')
@@ -51,7 +62,7 @@ export class BorrowRecordsController {
 
   @Patch(':id/return')
   returnBook(@Param('id') id: string) {
-    return this.borrowRecordsService.returnBook(+id);
+    return this.borrowRecordsService.returnBook(Number(id));
   }
 
   @Delete(':id')

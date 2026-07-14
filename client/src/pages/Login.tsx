@@ -47,11 +47,13 @@ function Login() {
           borderRadius: 3,
         }}
       >
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-        >
+<Box
+  sx={{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  }}
+>
           <Avatar sx={{ mb: 2 }}>
             <LockOutlinedIcon />
           </Avatar>

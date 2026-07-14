@@ -66,13 +66,46 @@ export class BorrowRecordsService {
   }
 
   // Danh sách phiếu mượn
-async findAll(): Promise<BorrowRecord[]> {
-  return await this.borrowRecordRepo.find({
-    relations: ['book', 'reader'],
-    order: {
-      id: 'DESC',
-    },
-  });
+// Danh sách phiếu mượn
+async findAll(
+  page = 1,
+  limit = 10,
+  status = '',
+): Promise<{
+  data: BorrowRecord[];
+  total: number;
+  page: number;
+  limit: number;
+}> {
+  const query =
+    this.borrowRecordRepo.createQueryBuilder('borrow');
+
+  query
+    .leftJoinAndSelect('borrow.book', 'book')
+    .leftJoinAndSelect('borrow.reader', 'reader');
+
+  if (status) {
+    query.andWhere(
+      'borrow.status = :status',
+      { status },
+    );
+  }
+
+  query.orderBy('borrow.id', 'DESC');
+
+  query.skip((page - 1) * limit);
+
+  query.take(limit);
+
+  const [data, total] =
+    await query.getManyAndCount();
+
+  return {
+    data,
+    total,
+    page,
+    limit,
+  };
 }
 
   // Chi tiết phiếu mượn

@@ -57,3 +57,8 @@ export const getBookHistory = async (id: number) => {
   const response = await api.get(`/books/${id}/history`);
   return response.data;
 };
+
+export const getAllBooks = async () => {
+  const response = await api.get<Book[]>('/books/all');
+  return response.data;
+};

@@ -39,6 +39,11 @@ export class ReadersController {
     );
   }
 
+  @Get('all')
+findAllReaders() {
+  return this.readersService.findAllReaders();
+}
+
   // Chi tiết độc giả
   @Get(':id')
   findOne(@Param('id') id: string) {

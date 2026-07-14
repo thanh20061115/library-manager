@@ -147,4 +147,12 @@ async findAll(
     },
   });
  }
+
+ async findAllBooks(): Promise<Book[]> {
+  return this.bookRepo.find({
+    order: {
+      title: 'ASC',
+    },
+  });
+}
 }
