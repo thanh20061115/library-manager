@@ -17,7 +17,10 @@ import {
 
 import { Doughnut } from 'react-chartjs-2';
 
-import { getDashboard, type DashboardData } from '../services/dashboard.service';
+import {
+  getDashboardStatistics,
+  type DashboardStatistics,
+} from '../services/dashboard.service';
 
 ChartJS.register(
   ArcElement,
@@ -28,7 +31,8 @@ ChartJS.register(
 function Dashboard() {
   const [loading, setLoading] = useState(true);
 
-  const [data, setData] = useState<DashboardData>({
+  const [data, setData] =
+  useState<DashboardStatistics>({
     totalBooks: 0,
     totalReaders: 0,
     totalBorrowRecords: 0,
@@ -42,15 +46,15 @@ function Dashboard() {
   }, []);
 
   async function loadDashboard() {
-    try {
-      const result = await getDashboard();
-      setData(result);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+  try {
+    const result = await getDashboardStatistics();
+    setData(result);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
   }
+}
 
   if (loading) {
     return <CircularProgress />;

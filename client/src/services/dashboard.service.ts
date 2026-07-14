@@ -1,6 +1,6 @@
 import api from '../api/axios';
 
-export interface DashboardData {
+export interface DashboardStatistics {
   totalBooks: number;
   totalReaders: number;
   totalBorrowRecords: number;
@@ -9,7 +9,9 @@ export interface DashboardData {
   availableBooks: number;
 }
 
-export const getDashboard = async (): Promise<DashboardData> => {
-  const response = await api.get('/dashboard');
+export async function getDashboardStatistics() {
+  const response =
+    await api.get<DashboardStatistics>('/dashboard');
+
   return response.data;
-};
+}
